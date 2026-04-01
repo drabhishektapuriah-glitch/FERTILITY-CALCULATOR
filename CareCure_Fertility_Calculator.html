@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Care & Cure Fertility Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #C9667A;
+    --rose-light: #F2D0D8;
+    --rose-pale: #FDF0F3;
+    --teal: #4A8FA8;
+    --teal-light: #D0E8F0;
+    --teal-pale: #EEF6FA;
+    --gold: #C4973A;
+    --gold-light: #FAF0D8;
+    --text: #2C2C3A;
+    --text-soft: #6B6B80;
+    --white: #FFFFFF;
+    --border: #E8D5DA;
+    --bg: #FBF7F8;
+    --fertile: #4CAF8A;
+    --fertile-light: #D4F0E6;
+    --peak: #E55A6A;
+    --peak-light: #FFD6DB;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(201,102,122,0.10);
+    --shadow-sm: 0 2px 10px rgba(0,0,0,0.07);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #C9667A 0%, #A84F65 50%, #7B3C55 100%);
+    color: white;
+    padding: 18px 20px 14px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+  }
+  .header-clinic {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-bottom: 2px;
+  }
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .header-subtitle {
+    font-size: 11px;
+    opacity: 0.75;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+  .header-patient {
+    background: rgba(255,255,255,0.18);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    display: inline-block;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── WELCOME SCREEN ── */
+  #welcomeScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 90px);
+    padding: 30px 24px;
+    animation: fadeIn 0.5s ease;
+  }
+  .welcome-logo {
+    width: 90px; height: 90px;
+    background: linear-gradient(135deg, var(--rose), var(--teal));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 30px rgba(201,102,122,0.3);
+  }
+  .welcome-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--rose);
+    margin-bottom: 8px;
+  }
+  .welcome-sub {
+    font-size: 14px;
+    color: var(--text-soft);
+    text-align: center;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+  .welcome-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .welcome-card label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .welcome-card input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    background: var(--rose-pale);
+  }
+  .welcome-card input:focus { border-color: var(--rose); }
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--rose), #A84F65);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px rgba(201,102,122,0.35);
+  }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .saved-patients {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .saved-patients h3 {
+    font-size: 12px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .patient-chip {
+    display: inline-block;
+    background: white;
+    border: 1.5px solid var(--rose-light);
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 13px;
+    color: var(--rose);
+    font-weight: 500;
+    cursor: pointer;
+    margin: 4px;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .patient-chip:hover { background: var(--rose); color: white; }
+
+  /* ── MAIN APP ── */
+  #mainApp { display: none; animation: fadeIn 0.4s ease; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky; top: 88px; z-index: 90;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1;
+    min-width: 80px;
+    padding: 12px 8px 10px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .tab .tab-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+  .tab.active { color: var(--rose); border-bottom-color: var(--rose); }
+
+  /* ── CONTENT ── */
+  .content { padding: 20px 16px 100px; }
+
+  /* ── SECTION HEADER ── */
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--rose);
+    margin-bottom: 4px;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    outline: none;
+    background: var(--rose-pale);
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--rose); }
+
+  .btn-add {
+    width: 100%;
+    padding: 13px;
+    background: var(--rose-pale);
+    color: var(--rose);
+    border: 2px dashed var(--rose-light);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-add:hover { background: var(--rose); color: white; border-style: solid; }
+
+  .btn-save {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--teal), #3A7A95);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 8px;
+    box-shadow: 0 4px 14px rgba(74,143,168,0.35);
+    transition: transform 0.15s;
+  }
+  .btn-save:active { transform: scale(0.98); }
+
+  .btn-danger {
+    background: none;
+    border: none;
+    color: #E55;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── LMP LIST ── */
+  .lmp-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--rose-pale);
+    border: 1px solid var(--rose-light);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .lmp-entry .lmp-num {
+    background: var(--rose);
+    color: white;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .lmp-entry .lmp-info { flex: 1; }
+  .lmp-entry .lmp-date { font-size: 14px; font-weight: 600; color: var(--text); }
+  .lmp-entry .lmp-cycle { font-size: 12px; color: var(--text-soft); }
+
+  /* ── FERTILE WINDOW CARD ── */
+  .fertile-hero {
+    background: linear-gradient(135deg, #4CAF8A, #2E8B6A);
+    color: white;
+    border-radius: var(--radius);
+    padding: 22px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(76,175,138,0.3);
+  }
+  .fertile-hero-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+  }
+  .fertile-hero-dates {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .fertile-hero-cycle {
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  .peak-hero {
+    background: linear-gradient(135deg, var(--rose), #A84F65);
+    color: white;
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(201,102,122,0.3);
+  }
+  .peak-hero-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.85;
+    margin-bottom: 4px;
+  }
+  .peak-hero-date {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .info-box {
+    background: white;
+    border-radius: 12px;
+    padding: 14px 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+  }
+  .info-box-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--rose);
+  }
+  .info-box-label {
+    font-size: 11px;
+    color: var(--text-soft);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* ── CALENDAR MINI ── */
+  .calendar-wrap { background: white; border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 14px; }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-month { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--text); }
+  .cal-nav { background: var(--rose-pale); border: none; border-radius: 8px; padding: 6px 12px; font-size: 16px; cursor: pointer; color: var(--rose); font-weight: 700; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-day-name { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-soft); padding: 4px 0; text-transform: uppercase; }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+    border: 1.5px solid transparent;
+  }
+  .cal-day:hover:not(.empty):not(.other-month) { border-color: var(--rose-light); }
+  .cal-day.empty { pointer-events: none; }
+  .cal-day.other-month { color: #ddd; pointer-events: none; }
+  .cal-day.fertile { background: var(--fertile-light); color: var(--fertile); font-weight: 600; }
+  .cal-day.peak { background: var(--peak-light); color: var(--peak); font-weight: 700; border-color: var(--peak); }
+  .cal-day.lmp { background: #E8D5F5; color: #7B4FA6; font-weight: 700; }
+  .cal-day.intercourse { border-color: var(--gold) !important; }
+  .cal-day.intercourse::after {
+    content: '♥';
+    position: absolute;
+    bottom: 1px; right: 2px;
+    font-size: 7px;
+    color: var(--gold);
+  }
+  .cal-day.today { border-color: var(--teal) !important; color: var(--teal); font-weight: 700; }
+
+  .cal-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-soft); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ── INTERCOURSE LOG ── */
+  .intercourse-day {
+    display: flex;
+    align-items: center;
+    background: var(--gold-light);
+    border: 1.5px solid #E8D0A0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+  }
+  .intercourse-day .day-icon { font-size: 20px; margin-right: 12px; }
+  .intercourse-day .day-info { flex: 1; }
+  .intercourse-day .day-date { font-size: 14px; font-weight: 600; }
+  .intercourse-day .day-label { font-size: 12px; color: var(--text-soft); }
+
+  .day-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    margin-bottom: 8px;
+    cursor: pointer;
+    background: var(--rose-pale);
+    transition: all 0.2s;
+  }
+  .day-toggle.logged {
+    background: var(--gold-light);
+    border-color: #E8D0A0;
+  }
+  .day-toggle .day-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .day-toggle.logged .day-check {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+  }
+  .day-toggle .day-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .day-toggle .day-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .badge-peak { background: var(--peak-light); color: var(--peak); }
+  .badge-fertile { background: var(--fertile-light); color: var(--fertile); }
+
+  /* ── HISTORY TAB ── */
+  .cycle-history-card {
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .cycle-history-header {
+    background: linear-gradient(135deg, var(--rose-pale), white);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  .cycle-history-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--rose);
+  }
+  .cycle-history-sub { font-size: 12px; color: var(--text-soft); }
+  .cycle-history-body { padding: 14px 16px; display: none; }
+  .cycle-history-body.open { display: block; }
+
+  .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--bg); }
+  .stat-label { font-size: 13px; color: var(--text-soft); }
+  .stat-val { font-size: 13px; font-weight: 600; color: var(--text); }
+
+  .intercourse-log-display {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+  }
+  .intercourse-badge {
+    background: var(--gold-light);
+    border: 1px solid #E8D0A0;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8B6A20;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* ── TIPS ── */
+  .tip-card {
+    background: var(--teal-pale);
+    border: 1px solid var(--teal-light);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .tip-icon { font-size: 20px; flex-shrink: 0; }
+  .tip-text { font-size: 13px; color: var(--text); line-height: 1.6; }
+  .tip-text strong { color: var(--teal); }
+
+  /* ── NOTICE ── */
+  .notice {
+    background: var(--gold-light);
+    border: 1px solid #E8D0A0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #7A5A20;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 10px;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #2C2C3A;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 999;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .tab-content { display: none; animation: fadeIn 0.3s ease; }
+  .tab-content.active { display: block; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-soft);
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--rose); margin-bottom: 6px; }
+  .empty-state p { font-size: 13px; line-height: 1.6; }
+
+  /* ── CYCLE SELECTOR ── */
+  .cycle-selector {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    scrollbar-width: none;
+  }
+  .cycle-selector::-webkit-scrollbar { display: none; }
+  .cycle-btn {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    border: 1.5px solid var(--rose-light);
+    background: white;
+    color: var(--rose);
+    transition: all 0.2s;
+  }
+  .cycle-btn.active { background: var(--rose); color: white; border-color: var(--rose); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 14px 0;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+    cursor: pointer;
+  }
+
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-soft);
+    margin-top: 20px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    line-height: 1.6;
+  }
+  .footer-note strong { color: var(--rose); }
+
+  .badge-count {
+    background: var(--rose);
+    color: white;
+    border-radius: 20px;
+    padding: 2px 7px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+
+  /* ── BMI METER ── */
+  .bmi-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .bmi-category {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .bmi-bar-wrap {
+    height: 10px;
+    border-radius: 10px;
+    background: linear-gradient(to right, #60AFFF 0%, #4CAF8A 22%, #FFD060 30%, #FF9800 40%, #E55A6A 100%);
+    position: relative;
+    margin: 10px 0 4px;
+  }
+  .bmi-indicator {
+    position: absolute;
+    top: -5px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #333;
+    transform: translateX(-50%);
+    transition: left 0.5s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+  .bmi-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-soft);
+  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .profile-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .profile-stat {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .profile-stat-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+  .profile-stat-label { font-size: 11px; color: var(--text-soft); font-weight: 500; margin-top: 2px; }
+  .bmi-mini {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .bmi-mini-val { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; flex-shrink: 0; }
+  .bmi-mini-info { flex: 1; }
+  .bmi-mini-cat { font-size: 13px; font-weight: 600; }
+  .bmi-mini-sub { font-size: 11px; color: var(--text-soft); margin-top: 2px; line-height: 1.4; }
+
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-select-wrap {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 22px;
+  }
+  .lang-btn {
+    padding: 9px 18px;
+    border-radius: 22px;
+    border: 2px solid var(--rose-light);
+    background: white;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    color: var(--rose);
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .lang-btn.selected { background: var(--rose); color: white; border-color: var(--rose); }
+
+  /* ── MISSED PERIOD ALERT ── */
+  .alert-missed {
+    background: linear-gradient(135deg, #E55A6A, #C9667A);
+    color: white;
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(229,90,106,0.4);
+    animation: pulse 2s infinite;
+  }
+  .alert-missed-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .alert-missed-body { font-size: 13px; opacity: 0.95; line-height: 1.6; margin-bottom: 10px; }
+  .alert-missed-btn {
+    background: white;
+    color: var(--rose);
+    border: none;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 4px 20px rgba(229,90,106,0.4); }
+    50% { box-shadow: 0 4px 32px rgba(229,90,106,0.7); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-clinic">Care and Cure Hospital · Bharuch</div>
+  <div class="header-title">🌸 Fertility Calculator</div>
+  <div class="header-subtitle">Fertile Window & Cycle Tracker</div>
+  <div class="header-patient" id="headerPatient" onclick="switchPatient()" style="display:none">👤 <span id="headerPatientName"></span> · Change</div>
+</div>
+
+<!-- WELCOME SCREEN -->
+<div id="welcomeScreen">
+  <div class="welcome-logo">🌸</div>
+  <div class="welcome-heading">Welcome</div>
+  <div class="welcome-sub">Enter your name to access your personal fertility tracker. Your data is saved privately on this device.</div>
+  <div class="welcome-card" style="margin-bottom:14px;">
+    <label style="display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-soft);margin-bottom:10px;">Select Language / भाषा चुनें / ભાષા પસંદ કરો / ভাষা বেছে নিন</label>
+    <div class="lang-select-wrap">
+      <button class="lang-btn selected" onclick="setLang('en')">🇬🇧 English</button>
+      <button class="lang-btn" onclick="setLang('hi')">🇮🇳 हिंदी</button>
+      <button class="lang-btn" onclick="setLang('gu')">🏵️ ગુજરાતી</button>
+      <button class="lang-btn" onclick="setLang('bn')">🌿 বাংলা</button>
+    </div>
+  </div>
+  <div class="welcome-card">
+    <label id="lbl-name">Your Full Name</label>
+    <input type="text" id="nameInput" placeholder="e.g. Priya Sharma" autocomplete="name" autocorrect="off">
+    <button class="btn-primary" onclick="enterApp()">Enter My Tracker →</button>
+  </div>
+  <div class="saved-patients" id="savedPatientsWrap" style="display:none">
+    <h3>Recent Patients</h3>
+    <div id="savedPatientsChips"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('overview')">
+      <span class="tab-icon">📊</span>Overview
+    </div>
+    <div class="tab" onclick="showTab('lmp')">
+      <span class="tab-icon">📅</span>LMP Log
+    </div>
+    <div class="tab" onclick="showTab('intercourse')">
+      <span class="tab-icon">♥</span>Log Days
+    </div>
+    <div class="tab" onclick="showTab('history')">
+      <span class="tab-icon">📋</span>History
+    </div>
+    <div class="tab" onclick="showTab('tips')">
+      <span class="tab-icon">💡</span>Tips
+    </div>
+    <div class="tab" onclick="showTab('profile')">
+      <span class="tab-icon">👤</span>Profile
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ OVERVIEW TAB ══ -->
+    <div class="tab-content active" id="tab-overview">
+      <div id="overviewEmpty" class="empty-state" style="display:none">
+        <div class="empty-icon">📅</div>
+        <h3>No LMP Recorded Yet</h3>
+        <p>Go to the <strong>LMP Log</strong> tab and add your last period date to see your fertile window.</p>
+      </div>
+      <div id="overviewContent">
+        <div id="missedPeriodAlert" style="display:none"></div>
+        <div class="section-title" id="overviewGreeting">Your Cycle Overview</div>
+        <div class="section-desc" id="overviewDesc">Based on your recorded LMP dates</div>
+
+        <div id="overviewCards"></div>
+
+        <div class="card-title" style="margin-top:4px;margin-bottom:10px;">
+          <span>📆</span> CYCLE CALENDAR
+        </div>
+        <div class="calendar-wrap">
+          <div class="cal-header">
+            <button class="cal-nav" onclick="calPrev()">‹</button>
+            <div class="cal-month" id="calMonthLabel"></div>
+            <button class="cal-nav" onclick="calNext()">›</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="cal-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#E8D5F5;border:1px solid #C9A8E0"></div>LMP</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--fertile-light);border:1px solid var(--fertile)"></div>Fertile</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--peak-light);border:2px solid var(--peak)"></div>Peak (Ovulation)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--gold-light);border:2px solid #C4973A"></div>Intercourse ♥</div>
+          </div>
+        </div>
+
+        <!-- Next cycles preview -->
+        <div class="card">
+          <div class="card-title"><span>🔮</span> NEXT 3 CYCLES FORECAST</div>
+          <div id="forecastList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LMP LOG TAB ══ -->
+    <div class="tab-content" id="tab-lmp">
+      <div class="section-title">LMP Records</div>
+      <div class="section-desc">Record your Last Menstrual Period dates. Up to 6 months history for accurate cycle calculation.</div>
+
+      <div class="card">
+        <div class="card-title"><span>➕</span> ADD NEW LMP</div>
+        <div class="field">
+          <label>Date of Last Period</label>
+          <input type="date" id="newLmpDate" max="">
+        </div>
+        <div class="field">
+          <label>Cycle Length (days) — Optional</label>
+          <input type="number" id="newCycleLen" placeholder="Leave blank to auto-calculate" min="20" max="45">
+        </div>
+        <div class="field">
+          <label>Any Notes</label>
+          <input type="text" id="newLmpNote" placeholder="e.g. Spotting, Heavy flow...">
+        </div>
+        <button class="btn-save" onclick="addLMP()">✓ Save LMP Date</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span>📋</span> LMP HISTORY <span id="lmpCountBadge"></span></div>
+        <div id="lmpList"></div>
+      </div>
+
+      <div class="card" id="cycleStatsCard" style="display:none">
+        <div class="card-title"><span>📊</span> CYCLE ANALYSIS</div>
+        <div id="cycleStats"></div>
+      </div>
+    </div>
+
+    <!-- ══ INTERCOURSE LOG TAB ══ -->
+    <div class="tab-content" id="tab-intercourse">
+      <div class="section-title">Log Intercourse Days</div>
+      <div class="section-desc">Track which fertile days you had intercourse. This helps your doctor assess your timing.</div>
+
+      <div id="interceptEmpty" class="empty-state" style="display:none">
+        <div class="empty-icon">📅</div>
+        <h3>No Fertile Window Yet</h3>
+        <p>Add your LMP in the <strong>LMP Log</strong> tab first.</p>
+      </div>
+
+      <div id="intercourseContent">
+        <div class="cycle-selector" id="cycleSelector"></div>
+        <div id="intercourseWindowInfo"></div>
+        <div id="intercourseDays"></div>
+        <div id="intercourseCount" style="text-align:center;font-size:13px;color:var(--text-soft);margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- ══ HISTORY TAB ══ -->
+    <div class="tab-content" id="tab-history">
+      <div class="section-title">Cycle History</div>
+      <div class="section-desc">Review your past cycles, fertile windows, and intercourse records.</div>
+      <div id="historyList"></div>
+      <div id="historyEmpty" class="empty-state" style="display:none">
+        <div class="empty-icon">📋</div>
+        <h3>No History Yet</h3>
+        <p>Your cycle records will appear here once you add LMP dates.</p>
+      </div>
+    </div>
+
+    <!-- ══ TIPS TAB ══ -->
+    <div class="tab-content" id="tab-tips">
+      <div class="section-title">Fertility Tips</div>
+      <div class="section-desc" style="margin-bottom:10px;">Evidence-based guidance to maximise your chances of conception.</div>
+
+      <div class="notice">
+        <span>🏥</span>
+        <span>These tips are general guidance from <strong>Care and Cure Hospital, Bharuch</strong>. Always follow your doctor's specific advice for your case.</span>
+      </div>
+
+      <div class="tip-card">
+        <div class="tip-icon">🎯</div>
+        <div class="tip-text"><strong>Time Intercourse Correctly</strong><br>The fertile window is typically 5 days before ovulation + the day of ovulation. The <strong>2 days before and on the day of ovulation</strong> are the most fertile (peak days).</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📅</div>
+        <div class="tip-text"><strong>Frequency Matters</strong><br>Aim for intercourse <strong>every 1–2 days</strong> during the fertile window. Daily intercourse during the fertile window gives the best chance of conception.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🌡️</div>
+        <div class="tip-text"><strong>Ovulation Signs</strong><br>Watch for <strong>egg-white cervical mucus</strong> (clear, stretchy), mild one-sided pelvic pain (Mittelschmerz), and a slight rise in basal body temperature after ovulation.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🥗</div>
+        <div class="tip-text"><strong>Diet & Lifestyle</strong><br>Take <strong>folic acid 5mg daily</strong>. Maintain a healthy BMI. Avoid smoking and alcohol. Reduce stress. A Mediterranean-style diet may support fertility.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">💊</div>
+        <div class="tip-text"><strong>Supplements</strong><br>Folic acid (pre-conception), Vitamin D, and CoQ10 (Coenzyme Q10) have evidence for fertility support. Consult your doctor before starting any supplements.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">⏰</div>
+        <div class="tip-text"><strong>When to Seek Help</strong><br>If you've been trying for <strong>12 months (under 35)</strong> or <strong>6 months (over 35)</strong> without conception, consult a fertility specialist. Earlier if you have PCOS, endometriosis, or irregular cycles.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📲</div>
+        <div class="tip-text"><strong>Track Your Cycles</strong><br>Recording at least <strong>3–6 months of LMP dates</strong> helps your doctor calculate your average cycle and identify the most accurate ovulation window.</div>
+      </div>
+      <div class="footer-note">
+        <strong>Care and Cure Hospital</strong><br>
+        Dr. Abhishek Tapuriah · MBBS, MD OBG, Fellowship in IVF<br>
+        Bharuch, Gujarat · For appointments and queries, contact your clinic.
+      </div>
+    </div>
+
+  
+    <!-- ══ PROFILE TAB ══ -->
+    <div class="tab-content" id="tab-profile">
+      <div class="section-title">My Profile</div>
+      <div class="section-desc">Enter your physical details to track BMI and get personalised fertility insights.</div>
+
+      <div class="card">
+        <div class="card-title"><span>📏</span> BODY MEASUREMENTS</div>
+        <div class="two-col">
+          <div class="field">
+            <label>Weight (kg)</label>
+            <input type="number" id="profileWeight" placeholder="e.g. 58" min="30" max="200" step="0.1" oninput="liveCalcBMI()">
+          </div>
+          <div class="field">
+            <label>Height (cm)</label>
+            <input type="number" id="profileHeight" placeholder="e.g. 158" min="100" max="220" step="0.5" oninput="liveCalcBMI()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Age (years)</label>
+          <input type="number" id="profileAge" placeholder="e.g. 28" min="15" max="55">
+        </div>
+        <div class="field">
+          <label>Blood Group</label>
+          <select id="profileBloodGroup">
+            <option value="">— Select —</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>AB+</option><option>AB-</option>
+            <option>O+</option><option>O-</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Any Medical Conditions</label>
+          <input type="text" id="profileConditions" placeholder="e.g. PCOS, Thyroid, Diabetes...">
+        </div>
+        <button class="btn-save" onclick="saveProfile()">✓ Save Profile</button>
+      </div>
+
+      <!-- Live BMI display -->
+      <div id="bmiDisplay" style="display:none">
+        <div class="card">
+          <div class="card-title"><span>⚖️</span> BMI ANALYSIS</div>
+          <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:8px;">
+            <div class="bmi-number" id="bmiValue">—</div>
+            <div class="bmi-category" id="bmiCategory"></div>
+          </div>
+          <div class="bmi-bar-wrap">
+            <div class="bmi-indicator" id="bmiIndicator"></div>
+          </div>
+          <div class="bmi-bar-labels">
+            <span>Underweight<br>&lt;18.5</span>
+            <span style="text-align:center">Normal<br>18.5–22.9</span>
+            <span style="text-align:center">Overweight<br>23–27.4</span>
+            <span style="text-align:right">Obese<br>&gt;27.5</span>
+          </div>
+          <div id="bmiAdvice" style="margin-top:14px;font-size:13px;line-height:1.7;color:var(--text-soft);background:var(--rose-pale);border-radius:10px;padding:12px 14px;"></div>
+        </div>
+
+        <div class="profile-stat-grid" id="profileStatGrid"></div>
+      </div>
+    </div>
+
+</div><!-- /content -->
+</div><!-- /mainApp -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ════════════════════════════════════════════
+//  TRANSLATIONS
+// ════════════════════════════════════════════
+const LANG = {
+  en: {
+    welcomeHeading: 'Welcome',
+    welcomeSub: 'Enter your name to access your personal fertility tracker. Your data is saved privately on this device.',
+    labelName: 'Your Full Name',
+    btnEnter: 'Enter My Tracker →',
+    recentPatients: 'Recent Patients',
+    // Tabs
+    tabOverview: 'Overview', tabLmp: 'LMP Log', tabLog: 'Log Days',
+    tabHistory: 'History', tabTips: 'Tips', tabProfile: 'Profile',
+    // Overview
+    fertileWindow: '🟢 Current Fertile Window',
+    peakDay: '🌟 Estimated Ovulation (Peak Day)',
+    avgCycle: 'Avg Cycle (days)', lmpRecords: 'LMP Records',
+    forecast: '🔮 Next 3 Cycles Forecast',
+    noLmpTitle: 'No LMP Recorded Yet',
+    noLmpDesc: 'Go to the LMP Log tab and add your last period date to see your fertile window.',
+    // Missed period
+    missedTitle: '⚠️ Period May Be Late!',
+    missedBody: (date, days) => `Your period was expected around ${date} — that's ${days} day${days!==1?'s':''} ago. If you have not got your period, this could be a sign of pregnancy or a cycle irregularity. Please visit the hospital soon.`,
+    missedBtn: '🏥 Visit Care and Cure Hospital',
+    // LMP
+    addLmp: '➕ ADD NEW LMP',
+    lmpDate: 'Date of Last Period',
+    cycleLen: 'Cycle Length (days) — Optional',
+    lmpNote: 'Any Notes',
+    saveLmp: '✓ Save LMP Date',
+    lmpHistory: '📋 LMP HISTORY',
+    cycleAnalysis: '📊 CYCLE ANALYSIS',
+    avgCycleLbl: 'Average Cycle Length', cyclesAnalysed: 'Cycles Analysed',
+    shortest: 'Shortest Cycle', longest: 'Longest Cycle',
+    regularity: 'Cycle Regularity', regular: '✅ Regular', irregular: '⚠️ Irregular',
+    // Intercourse
+    logTitle: 'Log Intercourse Days',
+    logDesc: 'Track which fertile days you had intercourse. This helps your doctor assess your timing.',
+    noFertileTitle: 'No Fertile Window Yet',
+    noFertileDesc: 'Add your LMP in the LMP Log tab first.',
+    tapToLog: 'Tap to log intercourse on each day',
+    daysLogged: (n) => `${n} day${n!==1?'s':''} logged this fertile window`,
+    noDaysLogged: 'No days logged yet for this cycle',
+    // History
+    historyTitle: 'Cycle History', historyDesc: 'Review your past cycles, fertile windows, and intercourse records.',
+    noHistTitle: 'No History Yet', noHistDesc: 'Your cycle records will appear here once you add LMP dates.',
+    // Profile
+    profileTitle: 'My Profile', profileDesc: 'Enter your physical details to track BMI and get personalised fertility insights.',
+    measurements: '📏 BODY MEASUREMENTS',
+    weightLbl: 'Weight (kg)', heightLbl: 'Height (cm)', ageLbl: 'Age (years)',
+    bloodLbl: 'Blood Group', condLbl: 'Any Medical Conditions',
+    condPlaceholder: 'e.g. PCOS, Thyroid, Diabetes...',
+    saveProfile: '✓ Save Profile',
+    bmiTitle: '⚖️ BMI ANALYSIS', idealWeight: 'Ideal Weight Range',
+    // Tips
+    tipsTitle: 'Fertility Tips', tipsDesc: 'Evidence-based guidance to maximise your chances of conception.',
+    disclaimer: 'These tips are general guidance from Care and Cure Hospital, Bharuch. Always follow your doctor\'s specific advice for your case.',
+  },
+  hi: {
+    welcomeHeading: 'स्वागत है',
+    welcomeSub: 'अपना नाम दर्ज करें और अपने पर्सनल फर्टिलिटी ट्रैकर में प्रवेश करें। आपका डेटा इस डिवाइस पर सुरक्षित रहता है।',
+    labelName: 'आपका पूरा नाम',
+    btnEnter: 'मेरा ट्रैकर खोलें →',
+    recentPatients: 'हाल के मरीज़',
+    tabOverview: 'सारांश', tabLmp: 'LMP लॉग', tabLog: 'दिन दर्ज',
+    tabHistory: 'इतिहास', tabTips: 'सुझाव', tabProfile: 'प्रोफ़ाइल',
+    fertileWindow: '🟢 वर्तमान उपजाऊ अवधि',
+    peakDay: '🌟 अनुमानित ओव्यूलेशन दिन',
+    avgCycle: 'औसत चक्र (दिन)', lmpRecords: 'LMP रिकॉर्ड',
+    forecast: '🔮 अगले 3 चक्रों का अनुमान',
+    noLmpTitle: 'कोई LMP दर्ज नहीं',
+    noLmpDesc: 'अपनी उपजाऊ अवधि देखने के लिए LMP लॉग टैब में अपनी अंतिम माहवारी की तारीख जोड़ें।',
+    missedTitle: '⚠️ माहवारी में देरी हो सकती है!',
+    missedBody: (date, days) => `आपकी माहवारी ${date} के आसपास आने की उम्मीद थी — यानी ${days} दिन पहले। अगर माहवारी नहीं आई है, तो यह गर्भावस्था या अनियमित चक्र का संकेत हो सकता है। कृपया जल्द ही अस्पताल जाएं।`,
+    missedBtn: '🏥 केयर एंड क्योर हॉस्पिटल जाएं',
+    addLmp: '➕ नई LMP जोड़ें',
+    lmpDate: 'अंतिम माहवारी की तारीख',
+    cycleLen: 'चक्र की अवधि (दिन) — वैकल्पिक',
+    lmpNote: 'कोई नोट',
+    saveLmp: '✓ LMP तारीख सहेजें',
+    lmpHistory: '📋 LMP इतिहास',
+    cycleAnalysis: '📊 चक्र विश्लेषण',
+    avgCycleLbl: 'औसत चक्र अवधि', cyclesAnalysed: 'विश्लेषित चक्र',
+    shortest: 'सबसे छोटा चक्र', longest: 'सबसे लंबा चक्र',
+    regularity: 'चक्र नियमितता', regular: '✅ नियमित', irregular: '⚠️ अनियमित',
+    logTitle: 'संभोग के दिन दर्ज करें',
+    logDesc: 'उपजाऊ दिनों में संभोग के दिन दर्ज करें। इससे डॉक्टर को सही समय का आकलन करने में मदद मिलती है।',
+    noFertileTitle: 'अभी कोई उपजाऊ अवधि नहीं',
+    noFertileDesc: 'पहले LMP लॉग टैब में अपनी माहवारी की तारीख जोड़ें।',
+    tapToLog: 'प्रत्येक दिन को दर्ज करने के लिए टैप करें',
+    daysLogged: (n) => `इस उपजाऊ अवधि में ${n} दिन दर्ज`,
+    noDaysLogged: 'इस चक्र के लिए अभी कोई दिन दर्ज नहीं',
+    historyTitle: 'चक्र इतिहास', historyDesc: 'अपने पिछले चक्रों और रिकॉर्ड की समीक्षा करें।',
+    noHistTitle: 'अभी कोई इतिहास नहीं', noHistDesc: 'LMP तारीख जोड़ने के बाद यहां रिकॉर्ड दिखेंगे।',
+    profileTitle: 'मेरी प्रोफ़ाइल', profileDesc: 'BMI और व्यक्तिगत सुझाव के लिए अपनी शारीरिक जानकारी दर्ज करें।',
+    measurements: '📏 शारीरिक माप',
+    weightLbl: 'वज़न (किग्रा)', heightLbl: 'ऊंचाई (सेमी)', ageLbl: 'आयु (वर्ष)',
+    bloodLbl: 'रक्त समूह', condLbl: 'कोई बीमारी / स्थिति',
+    condPlaceholder: 'जैसे PCOS, थायरॉइड, मधुमेह...',
+    saveProfile: '✓ प्रोफ़ाइल सहेजें',
+    bmiTitle: '⚖️ BMI विश्लेषण', idealWeight: 'आदर्श वज़न सीमा',
+    tipsTitle: 'प्रजनन सुझाव', tipsDesc: 'गर्भधारण की संभावना बढ़ाने के लिए वैज्ञानिक सुझाव।',
+    disclaimer: 'ये सुझाव केयर एंड क्योर हॉस्पिटल, भरूच की सामान्य जानकारी हैं। हमेशा अपने डॉक्टर की सलाह का पालन करें।',
+  },
+  gu: {
+    welcomeHeading: 'સ્વાગત છે',
+    welcomeSub: 'તમારું નામ દાખલ કરો અને તમારા ફર્ટિલિટી ટ્રૅકરમાં પ્રવેશ કરો. તમારો ડેટા આ ઉપકરણ પર સુરક્ષિત છે.',
+    labelName: 'તમારું પૂરું નામ',
+    btnEnter: 'મારો ટ્રૅકર ખોલો →',
+    recentPatients: 'તાજેતરના દર્દીઓ',
+    tabOverview: 'સારાંશ', tabLmp: 'LMP નોંધ', tabLog: 'દિવસ નોંધો',
+    tabHistory: 'ઇતિહાસ', tabTips: 'સૂચનો', tabProfile: 'પ્રોફ઼ાઇલ',
+    fertileWindow: '🟢 હાલની ફળદ્રુપ અવધિ',
+    peakDay: '🌟 અંદાજિત ઓવ્યુલેશન દિવસ',
+    avgCycle: 'સરેરાશ ચક્ર (દિવસ)', lmpRecords: 'LMP રેકોર્ડ',
+    forecast: '🔮 આગામી ૩ ચક્રોની આગાહી',
+    noLmpTitle: 'કોઈ LMP નોંધ નથી',
+    noLmpDesc: 'ફળદ્રુપ અવધિ જોવા માટે LMP નોંધ ટૅબમાં તમારા છેલ્લા માસિકની તારીખ ઉમેરો.',
+    missedTitle: '⚠️ માસિક મોડું થઈ શકે છે!',
+    missedBody: (date, days) => `તમારું માસિક ${date} ની આસપાસ આવવાનું હતું — ${days} દિવસ પહેલાં. જો માસિક ન આવ્યું હોય, તો તે ગર્ભાવસ્થા અથવા ચક્રની અનિયમિતતાની નિશાની હોઈ શકે. કૃપા કરીને જલ્દી હૉસ્પિટલ આવો.`,
+    missedBtn: '🏥 કેર એન્ડ ક્યોર હૉસ્પિટલ આવો',
+    addLmp: '➕ નવી LMP ઉમેરો',
+    lmpDate: 'છેલ્લા માસિકની તારીખ',
+    cycleLen: 'ચક્રની અવધિ (દિવસ) — વૈકલ્પિક',
+    lmpNote: 'કોઈ નોંધ',
+    saveLmp: '✓ LMP તારીખ સાચવો',
+    lmpHistory: '📋 LMP ઇતિહાસ',
+    cycleAnalysis: '📊 ચક્ર વિશ્લેષણ',
+    avgCycleLbl: 'સરેરાશ ચક્ર અવધિ', cyclesAnalysed: 'વિશ્લેષિત ચક્ર',
+    shortest: 'સૌથી ટૂંકું ચક્ર', longest: 'સૌથી લાંબું ચક્ર',
+    regularity: 'ચક્ર નિયમિતતા', regular: '✅ નિયમિત', irregular: '⚠️ અનિયમિત',
+    logTitle: 'સહવાસના દિવસ નોંધો',
+    logDesc: 'ફળદ્રુપ દિવસોમાં સહવાસ ક્યારે થયો તે નોંધો. આ ડૉક્ટરને સચોટ સલાહ આપવામાં મદદ કરે છે.',
+    noFertileTitle: 'ફળદ્રુપ અવધિ ઉપલબ્ધ નથી',
+    noFertileDesc: 'પ્રથમ LMP નોંધ ટૅબમાં તારીખ ઉમેરો.',
+    tapToLog: 'દરેક દિવસ નોંધવા ટૅપ કરો',
+    daysLogged: (n) => `આ ફળદ્રુપ અવધિમાં ${n} દિવસ નોંધ્યા`,
+    noDaysLogged: 'આ ચક્ર માટે હજી કોઈ દિવસ નોંધ્યો નથી',
+    historyTitle: 'ચક્ર ઇતિહાસ', historyDesc: 'તમારા ગત ચક્રો અને રેકોર્ડ તપાસો.',
+    noHistTitle: 'હજી ઇતિહાસ નથી', noHistDesc: 'LMP તારીખ ઉમેર્યા પછી રેકોર્ડ અહીં દેખાશે.',
+    profileTitle: 'મારી પ્રોફ઼ાઇલ', profileDesc: 'BMI અને વ્યક્તિગત સૂચન માટે શારીરિક માહિતી ભરો.',
+    measurements: '📏 શારીરિક માપ',
+    weightLbl: 'વજન (કિ.ગ્રા.)', heightLbl: 'ઊંચાઈ (સે.મી.)', ageLbl: 'ઉંમર (વર્ષ)',
+    bloodLbl: 'બ્લડ ગ્રૂપ', condLbl: 'કોઈ બીમારી / સ્થિતિ',
+    condPlaceholder: 'જેમ કે PCOS, થાઇરોઇડ, ડાયાબિટીસ...',
+    saveProfile: '✓ પ્રોફ઼ાઇલ સાચવો',
+    bmiTitle: '⚖️ BMI વિશ્લેષણ', idealWeight: 'આદર્શ વજન સીમા',
+    tipsTitle: 'પ્રજનન સૂચનો', tipsDesc: 'ગર્ભધારણ માટે વૈજ્ઞાનિક માર્ગદર્શન.',
+    disclaimer: 'આ સૂચનો કેર એન્ડ ક્યોર હૉસ્પિટલ, ભરૂચ તરફથી સામાન્ય માહિતી છે. હંમેશા તમારા ડૉક્ટરની સલાહ અનુસરો.',
+  },
+  bn: {
+    welcomeHeading: 'স্বাগতম',
+    welcomeSub: 'আপনার নাম লিখুন এবং আপনার ফার্টিলিটি ট্র্যাকারে প্রবেশ করুন। আপনার তথ্য এই ডিভাইসে নিরাপদে সংরক্ষিত থাকবে।',
+    labelName: 'আপনার পুরো নাম',
+    btnEnter: 'আমার ট্র্যাকার খুলুন →',
+    recentPatients: 'সাম্প্রতিক রোগীরা',
+    tabOverview: 'সারসংক্ষেপ', tabLmp: 'LMP লগ', tabLog: 'দিন লগ করুন',
+    tabHistory: 'ইতিহাস', tabTips: 'পরামর্শ', tabProfile: 'প্রোফাইল',
+    fertileWindow: '🟢 বর্তমান উর্বর সময়',
+    peakDay: '🌟 আনুমানিক ডিম্বস্ফোটন দিন',
+    avgCycle: 'গড় চক্র (দিন)', lmpRecords: 'LMP রেকর্ড',
+    forecast: '🔮 পরবর্তী ৩ চক্রের পূর্বাভাস',
+    noLmpTitle: 'কোনো LMP নথিভুক্ত নেই',
+    noLmpDesc: 'উর্বর সময় দেখতে LMP লগ ট্যাবে আপনার শেষ মাসিকের তারিখ যোগ করুন।',
+    missedTitle: '⚠️ মাসিক দেরিতে হতে পারে!',
+    missedBody: (date, days) => `আপনার মাসিক ${date} তারিখের কাছাকাছি হওয়ার কথা ছিল — ${days} দিন আগে। মাসিক না হলে এটি গর্ভাবস্থা বা চক্রের অনিয়মের লক্ষণ হতে পারে। দয়া করে শীঘ্রই হাসপাতালে আসুন।`,
+    missedBtn: '🏥 কেয়ার অ্যান্ড কিউর হাসপাতালে যান',
+    addLmp: '➕ নতুন LMP যোগ করুন',
+    lmpDate: 'শেষ মাসিকের তারিখ',
+    cycleLen: 'চক্রের দৈর্ঘ্য (দিন) — ঐচ্ছিক',
+    lmpNote: 'যেকোনো নোট',
+    saveLmp: '✓ LMP তারিখ সংরক্ষণ করুন',
+    lmpHistory: '📋 LMP ইতিহাস',
+    cycleAnalysis: '📊 চক্র বিশ্লেষণ',
+    avgCycleLbl: 'গড় চক্রের দৈর্ঘ্য', cyclesAnalysed: 'বিশ্লেষিত চক্র',
+    shortest: 'সবচেয়ে ছোট চক্র', longest: 'সবচেয়ে বড় চক্র',
+    regularity: 'চক্রের নিয়মিততা', regular: '✅ নিয়মিত', irregular: '⚠️ অনিয়মিত',
+    logTitle: 'মিলনের দিন লগ করুন',
+    logDesc: 'উর্বর দিনগুলোতে কোন দিন মিলন হয়েছে তা লগ করুন। এটি ডাক্তারকে সঠিক মূল্যায়ন করতে সাহায্য করে।',
+    noFertileTitle: 'এখনো উর্বর সময় নেই',
+    noFertileDesc: 'প্রথমে LMP লগ ট্যাবে তারিখ যোগ করুন।',
+    tapToLog: 'প্রতিটি দিন লগ করতে ট্যাপ করুন',
+    daysLogged: (n) => `এই উর্বর সময়ে ${n} দিন লগ করা হয়েছে`,
+    noDaysLogged: 'এই চক্রে এখনো কোনো দিন লগ করা হয়নি',
+    historyTitle: 'চক্রের ইতিহাস', historyDesc: 'আপনার আগের চক্র এবং রেকর্ড পর্যালোচনা করুন।',
+    noHistTitle: 'এখনো ইতিহাস নেই', noHistDesc: 'LMP তারিখ যোগ করার পর রেকর্ড এখানে দেখাবে।',
+    profileTitle: 'আমার প্রোফাইল', profileDesc: 'BMI এবং ব্যক্তিগতকৃত পরামর্শের জন্য শারীরিক তথ্য লিখুন।',
+    measurements: '📏 শারীরিক পরিমাপ',
+    weightLbl: 'ওজন (কেজি)', heightLbl: 'উচ্চতা (সেমি)', ageLbl: 'বয়স (বছর)',
+    bloodLbl: 'রক্তের গ্রুপ', condLbl: 'যেকোনো স্বাস্থ্য সমস্যা',
+    condPlaceholder: 'যেমন PCOS, থাইরয়েড, ডায়াবেটিস...',
+    saveProfile: '✓ প্রোফাইল সংরক্ষণ করুন',
+    bmiTitle: '⚖️ BMI বিশ্লেষণ', idealWeight: 'আদর্শ ওজন সীমা',
+    tipsTitle: 'প্রজনন পরামর্শ', tipsDesc: 'গর্ভধারণের সম্ভাবনা বাড়াতে বৈজ্ঞানিক নির্দেশনা।',
+    disclaimer: 'এই পরামর্শগুলি কেয়ার অ্যান্ড কিউর হাসপাতাল, ভরুচ থেকে সাধারণ নির্দেশনা। সর্বদা আপনার ডাক্তারের পরামর্শ অনুসরণ করুন।',
+  }
+};
+
+let currentLang = 'en';
+function t(key, ...args) {
+  const val = LANG[currentLang][key];
+  if (typeof val === 'function') return val(...args);
+  return val || LANG['en'][key] || key;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('selected', b.getAttribute('onclick') === `setLang('${lang}')`);
+  });
+  applyLangToWelcome();
+  if (currentPatient) refreshAll();
+}
+
+function applyLangToWelcome() {
+  const el = id => document.getElementById(id);
+  if (el('lbl-name')) el('lbl-name').textContent = t('labelName');
+  const nameInput = document.getElementById('nameInput');
+  if (nameInput) {
+    const placeholders = {en:'e.g. Priya Sharma', hi:'जैसे प्रिया शर्मा', gu:'જેમ કે પ્રિયા શર્મા', bn:'যেমন প্রিয়া শর্মা'};
+    nameInput.placeholder = placeholders[currentLang];
+  }
+  const enterBtn = document.querySelector('.btn-primary');
+  if (enterBtn) enterBtn.textContent = t('btnEnter');
+  const recLabel = document.querySelector('#savedPatientsWrap h3');
+  if (recLabel) recLabel.textContent = t('recentPatients');
+  document.querySelector('.welcome-heading').textContent = t('welcomeHeading');
+  document.querySelector('.welcome-sub').textContent = t('welcomeSub');
+}
+
+// ════════════════════════════════════════════
+//  MISSED PERIOD ALERT
+// ════════════════════════════════════════════
+function checkMissedPeriod() {
+  const alertEl = document.getElementById('missedPeriodAlert');
+  if (!alertEl) return;
+  const d = getData();
+  if (!d.lmps || !d.lmps.length) { alertEl.style.display='none'; return; }
+
+  const sorted = [...d.lmps].sort((a,b) => parseDate(b.date)-parseDate(a.date));
+  const avg = calcAvgCycle(d.lmps);
+  const latestLmp = parseDate(sorted[0].date);
+  const expectedNext = addDays(latestLmp, avg);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const daysLate = diffDays(expectedNext, today);
+
+  if (daysLate >= 1 && daysLate <= 60) {
+    alertEl.style.display = 'block';
+    alertEl.innerHTML = `
+      <div class="alert-missed">
+        <div class="alert-missed-title">${t('missedTitle')}</div>
+        <div class="alert-missed-body">${t('missedBody', fmt(expectedNext), daysLate)}</div>
+        <button class="alert-missed-btn" onclick="this.closest('.alert-missed').style.opacity=0.5">${t('missedBtn')}</button>
+      </div>`;
+  } else {
+    alertEl.style.display = 'none';
+  }
+}
+
+// ════════════════════════════════════════════
+//  STATE & STORAGE
+// ════════════════════════════════════════════
+let currentPatient = null;
+let calViewDate = new Date();
+let selectedCycleIndex = 0;
+
+function getData() {
+  if (!currentPatient) return { lmps: [], intercourse: {} };
+  try { return JSON.parse(localStorage.getItem('ccfc_' + currentPatient) || '{"lmps":[],"intercourse":{}}'); }
+  catch { return { lmps: [], intercourse: {} }; }
+}
+function saveData(d) {
+  localStorage.setItem('ccfc_' + currentPatient, JSON.stringify(d));
+}
+function getAllPatients() {
+  const pts = [];
+  for (let k of Object.keys(localStorage)) {
+    if (k.startsWith('ccfc_')) pts.push(k.replace('ccfc_', ''));
+  }
+  return pts;
+}
+
+// ════════════════════════════════════════════
+//  DATE HELPERS
+// ════════════════════════════════════════════
+function parseDate(str) {
+  // str = YYYY-MM-DD
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function toISO(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth()+1).padStart(2,'0');
+  const d = String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+function diffDays(a, b) {
+  return Math.round((b - a) / 86400000);
+}
+const LOCALE_MAP = { en:'en-IN', hi:'hi-IN', gu:'gu-IN', bn:'bn-IN' };
+function getLocale() { return LOCALE_MAP[currentLang] || 'en-IN'; }
+
+function fmt(date) {
+  return date.toLocaleDateString(getLocale(), { day:'numeric', month:'short', year:'numeric' });
+}
+function fmtShort(date) {
+  return date.toLocaleDateString(getLocale(), { day:'numeric', month:'short' });
+}
+function dayName(date) {
+  return date.toLocaleDateString(getLocale(), { weekday:'long', day:'numeric', month:'short' });
+}
+
+// ════════════════════════════════════════════
+//  CYCLE CALCULATIONS
+// ════════════════════════════════════════════
+function calcAvgCycle(lmps) {
+  // lmps sorted newest first
+  if (lmps.length < 2) return lmps[0]?.cycleLen || 28;
+  const sorted = [...lmps].sort((a,b) => parseDate(a.date) - parseDate(b.date));
+  const lengths = [];
+  for (let i = 1; i < sorted.length; i++) {
+    const diff = diffDays(parseDate(sorted[i-1].date), parseDate(sorted[i].date));
+    if (diff >= 18 && diff <= 50) lengths.push(diff);
+  }
+  // Also include manually entered lengths
+  for (const l of lmps) {
+    if (l.cycleLen && lengths.length === 0) lengths.push(Number(l.cycleLen));
+  }
+  if (!lengths.length) return 28;
+  return Math.round(lengths.reduce((a,b) => a+b, 0) / lengths.length);
+}
+
+function getFertileWindow(lmpDate, avgCycle) {
+  // Ovulation = LMP + (avgCycle - 14)
+  const ovulation = addDays(lmpDate, avgCycle - 14);
+  const fertileStart = addDays(ovulation, -5);
+  const fertileEnd = addDays(ovulation, 1);
+  return { fertileStart, ovulation, fertileEnd };
+}
+
+function getCycleData(lmp, avgCycle) {
+  const lmpDate = parseDate(lmp.date);
+  const fw = getFertileWindow(lmpDate, avgCycle);
+  const nextLmp = addDays(lmpDate, avgCycle);
+  return { lmpDate, avgCycle, nextLmp, ...fw };
+}
+
+function getLatestCycleData() {
+  const d = getData();
+  if (!d.lmps.length) return null;
+  const sorted = [...d.lmps].sort((a,b) => parseDate(b.date) - parseDate(a.date));
+  const latest = sorted[0];
+  const avg = calcAvgCycle(d.lmps);
+  return getCycleData(latest, avg);
+}
+
+// ════════════════════════════════════════════
+//  WELCOME / PATIENT
+// ════════════════════════════════════════════
+function init() {
+  document.getElementById('newLmpDate').max = toISO(new Date());
+  const pts = getAllPatients();
+  if (pts.length) {
+    document.getElementById('savedPatientsWrap').style.display = 'block';
+    const chips = document.getElementById('savedPatientsChips');
+    chips.innerHTML = pts.map(p =>
+      `<span class="patient-chip" onclick="loadPatient('${p}')">${p}</span>`
+    ).join('');
+  }
+}
+
+function enterApp() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { showToast('Please enter your name'); return; }
+  loadPatient(name);
+}
+
+function loadPatient(name) {
+  currentPatient = name;
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  document.getElementById('headerPatient').style.display = 'inline-block';
+  document.getElementById('headerPatientName').textContent = name;
+  // Ensure record exists
+  if (!localStorage.getItem('ccfc_' + name)) saveData({ lmps: [], intercourse: {} });
+  refreshAll();
+  loadProfile();
+}
+
+function switchPatient() {
+  currentPatient = null;
+  document.getElementById('welcomeScreen').style.display = 'flex';
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('headerPatient').style.display = 'none';
+  document.getElementById('nameInput').value = '';
+  init();
+}
+
+// ════════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════════
+function showTab(id) {
+  const tabKeys = ['overview','lmp','intercourse','history','tips','profile'];
+  const tabLabels = ['tabOverview','tabLmp','tabLog','tabHistory','tabTips','tabProfile'];
+  document.querySelectorAll('.tab').forEach((tab,i) => {
+    tab.classList.toggle('active', tabKeys[i] === id);
+    const iconEl = tab.querySelector('.tab-icon');
+    if (iconEl) tab.innerHTML = iconEl.outerHTML + t(tabLabels[i]);
+    tab.classList.toggle('active', tabKeys[i] === id);
+    tab.setAttribute('onclick', `showTab('${tabKeys[i]}')`);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  if (id === 'overview') renderOverview();
+  if (id === 'lmp') renderLMP();
+  if (id === 'intercourse') renderIntercourse();
+  if (id === 'history') renderHistory();
+}
+
+function refreshAll() {
+  renderOverview();
+  renderLMP();
+  renderIntercourse();
+  renderHistory();
+}
+
+// ════════════════════════════════════════════
+//  OVERVIEW TAB
+// ════════════════════════════════════════════
+function renderOverview() {
+  const d = getData();
+  if (!d.lmps.length) {
+    document.getElementById('overviewEmpty').style.display = 'block';
+    document.getElementById('overviewContent').style.display = 'none';
+    return;
+  }
+  document.getElementById('overviewEmpty').style.display = 'none';
+  document.getElementById('overviewContent').style.display = 'block';
+
+  const sorted = [...d.lmps].sort((a,b) => parseDate(b.date) - parseDate(a.date));
+  const avg = calcAvgCycle(d.lmps);
+  const latest = sorted[0];
+  const cd = getCycleData(latest, avg);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  checkMissedPeriod();
+
+  document.getElementById('overviewGreeting').textContent = `Hello, ${currentPatient} 🌸`;
+
+  // Status
+  let statusMsg = '';
+  if (today >= cd.fertileStart && today <= cd.fertileEnd) {
+    const isOv = toISO(today) === toISO(cd.ovulation);
+    statusMsg = isOv ? '🌟 Today is your Peak Ovulation Day!' : '🟢 You are currently in your Fertile Window';
+  } else if (today < cd.fertileStart) {
+    const daysTo = diffDays(today, cd.fertileStart);
+    statusMsg = `⏳ Fertile window starts in ${daysTo} day${daysTo!==1?'s':''}`;
+  } else {
+    const daysTo = diffDays(today, cd.nextLmp);
+    statusMsg = daysTo > 0 ? `📅 Next period expected in ${daysTo} day${daysTo!==1?'s':''}` : `📅 Period may be due`;
+  }
+  document.getElementById('overviewDesc').textContent = statusMsg;
+
+  // Cards
+  let html = `
+    <div class="fertile-hero">
+      <div class="fertile-hero-label">🟢 Current Fertile Window</div>
+      <div class="fertile-hero-dates">${fmtShort(cd.fertileStart)} – ${fmtShort(cd.fertileEnd)}</div>
+      <div class="fertile-hero-cycle">Based on LMP: ${fmt(cd.lmpDate)} · Avg cycle: ${avg} days</div>
+    </div>
+    <div class="peak-hero">
+      <div class="peak-hero-label">🌟 Estimated Ovulation (Peak Day)</div>
+      <div class="peak-hero-date">${fmt(cd.ovulation)}</div>
+    </div>
+    <div class="info-row">
+      <div class="info-box">
+        <div class="info-box-value">${avg}</div>
+        <div class="info-box-label">Avg Cycle (days)</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-value">${d.lmps.length}</div>
+        <div class="info-box-label">LMP Records</div>
+      </div>
+    </div>`;
+
+  // Count intercourse in current fertile window
+  const cycleKey = latest.date;
+  const logged = (d.intercourse[cycleKey] || []).length;
+  if (logged > 0) {
+    html += `<div class="notice"><span>♥</span><span>You've logged <strong>${logged} intercourse day${logged!==1?'s':''}</strong> this fertile window. Great job tracking!</span></div>`;
+  }
+
+  // Prepend BMI mini if profile exists
+  const bmiMini = getBMIMini();
+  if (bmiMini) html = bmiMini + html;
+  document.getElementById('overviewCards').innerHTML = html;
+
+  // Forecast
+  let forecastHtml = '';
+  for (let i = 1; i <= 3; i++) {
+    const futureLmp = addDays(cd.lmpDate, avg * i);
+    const fw = getFertileWindow(futureLmp, avg);
+    forecastHtml += `
+      <div class="stat-row">
+        <div class="stat-label">Cycle ${i} LMP ~${fmtShort(futureLmp)}</div>
+        <div class="stat-val">${fmtShort(fw.fertileStart)}–${fmtShort(fw.fertileEnd)}</div>
+      </div>`;
+  }
+  document.getElementById('forecastList').innerHTML = forecastHtml;
+
+  renderCalendar();
+}
+
+// ════════════════════════════════════════════
+//  CALENDAR
+// ════════════════════════════════════════════
+function renderCalendar() {
+  const d = getData();
+  if (!d.lmps.length) return;
+  const avg = calcAvgCycle(d.lmps);
+  const sorted = [...d.lmps].sort((a,b) => parseDate(b.date) - parseDate(a.date));
+
+  // Build sets of special dates
+  const lmpDates = new Set(d.lmps.map(l => l.date));
+  const fertileSet = new Set();
+  const peakSet = new Set();
+  const intercourseSet = new Set();
+
+  // For all lmps, mark fertile days
+  for (const lmp of sorted) {
+    const cd = getCycleData(lmp, avg);
+    let cur = new Date(cd.fertileStart);
+    while (cur <= cd.fertileEnd) {
+      fertileSet.add(toISO(cur));
+      cur = addDays(cur, 1);
+    }
+    peakSet.add(toISO(cd.ovulation));
+    // Also next cycle
+    const nextLmp = cd.nextLmp;
+    const nfw = getFertileWindow(nextLmp, avg);
+    let nc = new Date(nfw.fertileStart);
+    while (nc <= nfw.fertileEnd) {
+      fertileSet.add(toISO(nc));
+      nc = addDays(nc, 1);
+    }
+    peakSet.add(toISO(nfw.ovulation));
+  }
+
+  // Intercourse
+  for (const [cycleKey, days] of Object.entries(d.intercourse)) {
+    for (const day of days) intercourseSet.add(day);
+  }
+
+  const y = calViewDate.getFullYear();
+  const m = calViewDate.getMonth();
+  const firstDay = new Date(y, m, 1);
+  const lastDay = new Date(y, m+1, 0);
+  const todayStr = toISO(new Date());
+
+  document.getElementById('calMonthLabel').textContent =
+    firstDay.toLocaleDateString(getLocale(), { month:'long', year:'numeric' });
+
+  // Build localised short weekday names from actual dates (Sun=5Jan2025 is a Sunday)
+  const refSunday = new Date(2025,0,5);
+  const localDayNames = Array.from({length:7},(_,i)=>{
+    const d2 = new Date(2025,0,5+i);
+    return d2.toLocaleDateString(getLocale(),{weekday:'short'}).slice(0,3);
+  });
+  let html = localDayNames.map(n => `<div class="cal-day-name">${n}</div>`).join('');
+
+  // Empty cells before first day
+  const startDow = firstDay.getDay();
+  for (let i = 0; i < startDow; i++) html += `<div class="cal-day empty"></div>`;
+
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    let cls = 'cal-day';
+    if (peakSet.has(dateStr)) cls += ' peak';
+    else if (fertileSet.has(dateStr)) cls += ' fertile';
+    if (lmpDates.has(dateStr)) cls += ' lmp';
+    if (intercourseSet.has(dateStr)) cls += ' intercourse';
+    if (dateStr === todayStr) cls += ' today';
+    html += `<div class="${cls}">${day}</div>`;
+  }
+
+  document.getElementById('calGrid').innerHTML = html;
+}
+
+function calPrev() {
+  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth()-1, 1);
+  renderCalendar();
+}
+function calNext() {
+  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth()+1, 1);
+  renderCalendar();
+}
+
+// ════════════════════════════════════════════
+//  LMP TAB
+// ════════════════════════════════════════════
+function addLMP() {
+  const dateVal = document.getElementById('newLmpDate').value;
+  if (!dateVal) { showToast('Please select a date'); return; }
+  const d = getData();
+
+  // Check duplicate
+  if (d.lmps.find(l => l.date === dateVal)) {
+    showToast('This date is already recorded');
+    return;
+  }
+
+  // Keep max 6 (remove oldest if needed)
+  d.lmps.push({
+    date: dateVal,
+    cycleLen: document.getElementById('newCycleLen').value || null,
+    note: document.getElementById('newLmpNote').value.trim() || ''
+  });
+
+  // Sort and keep latest 6
+  d.lmps.sort((a,b) => parseDate(b.date) - parseDate(a.date));
+  if (d.lmps.length > 6) d.lmps = d.lmps.slice(0,6);
+
+  saveData(d);
+  document.getElementById('newLmpDate').value = '';
+  document.getElementById('newCycleLen').value = '';
+  document.getElementById('newLmpNote').value = '';
+  showToast('✓ LMP date saved');
+  renderLMP();
+  renderOverview();
+  renderIntercourse();
+  renderHistory();
+}
+
+function deleteLMP(dateStr) {
+  if (!confirm('Delete this LMP record?')) return;
+  const d = getData();
+  d.lmps = d.lmps.filter(l => l.date !== dateStr);
+  delete d.intercourse[dateStr];
+  saveData(d);
+  renderLMP();
+  renderOverview();
+  renderIntercourse();
+  renderHistory();
+  showToast('LMP record deleted');
+}
+
+function renderLMP() {
+  const d = getData();
+  const sorted = [...d.lmps].sort((a,b) => parseDate(b.date) - parseDate(a.date));
+  const avg = calcAvgCycle(d.lmps);
+
+  document.getElementById('lmpCountBadge').innerHTML =
+    sorted.length ? `<span class="badge-count">${sorted.length}</span>` : '';
+
+  if (!sorted.length) {
+    document.getElementById('lmpList').innerHTML =
+      '<div style="text-align:center;color:var(--text-soft);padding:20px;font-size:13px;">No LMP dates recorded yet.</div>';
+    document.getElementById('cycleStatsCard').style.display = 'none';
+    return;
+  }
+
+  // Calc cycle lengths
+  const sortedAsc = [...sorted].reverse();
+  let html = '';
+  sorted.forEach((lmp, i) => {
+    const lmpDate = parseDate(lmp.date);
+    const fw = getFertileWindow(lmpDate, avg);
+    // Find actual cycle length (to next lmp in list)
+    let cycleInfo = lmp.cycleLen ? `Manual: ${lmp.cycleLen}d` : '';
+    const nextInHistory = sortedAsc.find(l => parseDate(l.date) > lmpDate);
+    if (nextInHistory) {
+      const actualLen = diffDays(lmpDate, parseDate(nextInHistory.date));
+      cycleInfo = `Cycle: ${actualLen} days`;
+    }
+    html += `
+      <div class="lmp-entry">
+        <div class="lmp-num">${i+1}</div>
+        <div class="lmp-info">
+          <div class="lmp-date">${fmt(lmpDate)}</div>
+          <div class="lmp-cycle">
+            Fertile: ${fmtShort(fw.fertileStart)} – ${fmtShort(fw.fertileEnd)} · Peak: ${fmtShort(fw.ovulation)}
+            ${cycleInfo ? ` · ${cycleInfo}` : ''}
+            ${lmp.note ? ` · ${lmp.note}` : ''}
+          </div>
+        </div>
+        <button class="btn-danger" onclick="deleteLMP('${lmp.date}')">🗑</button>
+      </div>`;
+  });
+  document.getElementById('lmpList').innerHTML = html;
+
+  // Cycle stats
+  document.getElementById('cycleStatsCard').style.display = 'block';
+  const lengths = [];
+  for (let i = 1; i < sortedAsc.length; i++) {
+    const diff = diffDays(parseDate(sortedAsc[i-1].date), parseDate(sortedAsc[i].date));
+    if (diff >= 18 && diff <= 50) lengths.push(diff);
+  }
+  let statsHtml = `
+    <div class="stat-row"><div class="stat-label">Average Cycle Length</div><div class="stat-val">${avg} days</div></div>
+    <div class="stat-row"><div class="stat-label">Cycles Analysed</div><div class="stat-val">${lengths.length || 'Insufficient data'}</div></div>`;
+  if (lengths.length) {
+    statsHtml += `
+      <div class="stat-row"><div class="stat-label">Shortest Cycle</div><div class="stat-val">${Math.min(...lengths)} days</div></div>
+      <div class="stat-row"><div class="stat-label">Longest Cycle</div><div class="stat-val">${Math.max(...lengths)} days</div></div>`;
+  }
+  const regularity = lengths.length >= 2 ? (Math.max(...lengths) - Math.min(...lengths) <= 3 ? '✅ Regular' : '⚠️ Irregular') : 'Insufficient data';
+  statsHtml += `<div class="stat-row"><div class="stat-label">Cycle Regularity</div><div class="stat-val">${regularity}</div></div>`;
+  document.getElementById('cycleStats').innerHTML = statsHtml;
+}
+
+// ════════════════════════════════════════════
+//  INTERCOURSE LOG TAB
+// ════════════════════════════════════════════
+function renderIntercourse() {
+  const d = getData();
+  if (!d.lmps.length) {
+    document.getElementById('interceptEmpty').style.display = 'block';
+    document.getElementById('intercourseContent').style.display = 'none';
+    return;
+  }
+  document.getElementById('interceptEmpty').style.display = 'none';
+  document.getElementById('intercourseContent').style.display = 'block';
+
+  const sorted = [...d.lmps].sort((a,b) => parseDate(b.date) - parseDate(a.date));
+  const avg = calcAvgCycle(d.lmps);
+
+  // Cycle selector
+  const selectorHtml = sorted.map((lmp, i) =>
+    `<button class="cycle-btn ${i===selectedCycleIndex?'active':''}" onclick="selectCycle(${i})">${fmtShort(parseDate(lmp.date))}</button>`
+  ).join('');
+  document.getElementById('cycleSelector').innerHTML = selectorHtml;
+
+  const lmp = sorted[selectedCycleIndex];
+  const cd = getCycleData(lmp, avg);
+  const cycleKey = lmp.date;
+  const loggedDays = d.intercourse[cycleKey] || [];
+
+  // Window info
+  document.getElementById('intercourseWindowInfo').innerHTML = `
+    <div class="fertile-hero" style="margin-bottom:12px;">
+      <div class="fertile-hero-label">Fertile Window for this Cycle</div>
+      <div class="fertile-hero-dates">${fmtShort(cd.fertileStart)} – ${fmtShort(cd.fertileEnd)}</div>
+      <div class="fertile-hero-cycle">LMP: ${fmt(cd.lmpDate)} · Peak: ${fmt(cd.ovulation)}</div>
+    </div>`;
+
+  // Day toggles
+  let daysHtml = '<div style="margin-bottom:8px;font-size:12px;color:var(--text-soft);font-weight:600;text-transform:uppercase;letter-spacing:1px;">Tap to log intercourse on each day</div>';
+  let cur = new Date(cd.fertileStart);
+  while (cur <= cd.fertileEnd) {
+    const dateStr = toISO(cur);
+    const isLogged = loggedDays.includes(dateStr);
+    const isPeak = dateStr === toISO(cd.ovulation);
+    const isPeakMinus1 = dateStr === toISO(addDays(cd.ovulation, -1));
+    const badge = isPeak
+      ? `<span class="day-badge badge-peak">⭐ Peak</span>`
+      : isPeakMinus1
+      ? `<span class="day-badge badge-fertile">🔥 High</span>`
+      : `<span class="day-badge badge-fertile">✅ Fertile</span>`;
+    daysHtml += `
+      <div class="day-toggle ${isLogged?'logged':''}" onclick="toggleIntercourse('${cycleKey}','${dateStr}')">
+        <div class="day-check">${isLogged?'♥':''}</div>
+        <div class="day-name">${dayName(cur)}</div>
+        ${badge}
+      </div>`;
+    cur = addDays(cur, 1);
+  }
+  document.getElementById('intercourseDays').innerHTML = daysHtml;
+  document.getElementById('intercourseCount').innerHTML =
+    loggedDays.length
+      ? `<strong style="color:var(--gold)">${loggedDays.length} day${loggedDays.length!==1?'s':''} logged</strong> this fertile window`
+      : 'No days logged yet for this cycle';
+}
+
+function selectCycle(i) {
+  selectedCycleIndex = i;
+  renderIntercourse();
+}
+
+function toggleIntercourse(cycleKey, dateStr) {
+  const d = getData();
+  if (!d.intercourse[cycleKey]) d.intercourse[cycleKey] = [];
+  const arr = d.intercourse[cycleKey];
+  const idx = arr.indexOf(dateStr);
+  if (idx === -1) {
+    arr.push(dateStr);
+    showToast('♥ Day logged');
+  } else {
+    arr.splice(idx, 1);
+    showToast('Day removed');
+  }
+  saveData(d);
+  renderIntercourse();
+  renderOverview();
+}
+
+// ════════════════════════════════════════════
+//  HISTORY TAB
+// ════════════════════════════════════════════
+function renderHistory() {
+  const d = getData();
+  if (!d.lmps.length) {
+    document.getElementById('historyList').innerHTML = '';
+    document.getElementById('historyEmpty').style.display = 'block';
+    return;
+  }
+  document.getElementById('historyEmpty').style.display = 'none';
+  const sorted = [...d.lmps].sort((a,b) => parseDate(b.date) - parseDate(a.date));
+  const avg = calcAvgCycle(d.lmps);
+
+  let html = '';
+  sorted.forEach((lmp, i) => {
+    const cd = getCycleData(lmp, avg);
+    const cycleKey = lmp.date;
+    const logged = d.intercourse[cycleKey] || [];
+    const loggedBadges = logged.map(dateStr =>
+      `<div class="intercourse-badge">♥ ${fmtShort(parseDate(dateStr))}</div>`
+    ).join('');
+
+    html += `
+      <div class="cycle-history-card">
+        <div class="cycle-history-header" onclick="toggleHistory(this)">
+          <div>
+            <div class="cycle-history-title">LMP: ${fmt(cd.lmpDate)}</div>
+            <div class="cycle-history-sub">Fertile: ${fmtShort(cd.fertileStart)}–${fmtShort(cd.fertileEnd)} · ${logged.length} day${logged.length!==1?'s':''} logged</div>
+          </div>
+          <div style="color:var(--text-soft);font-size:20px">›</div>
+        </div>
+        <div class="cycle-history-body">
+          <div class="stat-row"><div class="stat-label">LMP Date</div><div class="stat-val">${fmt(cd.lmpDate)}</div></div>
+          <div class="stat-row"><div class="stat-label">Cycle Length Used</div><div class="stat-val">${cd.avgCycle} days</div></div>
+          <div class="stat-row"><div class="stat-label">Fertile Window</div><div class="stat-val">${fmtShort(cd.fertileStart)} – ${fmtShort(cd.fertileEnd)}</div></div>
+          <div class="stat-row"><div class="stat-label">Estimated Ovulation</div><div class="stat-val">${fmt(cd.ovulation)}</div></div>
+          <div class="stat-row"><div class="stat-label">Next Period Expected</div><div class="stat-val">${fmt(cd.nextLmp)}</div></div>
+          ${lmp.note ? `<div class="stat-row"><div class="stat-label">Notes</div><div class="stat-val">${lmp.note}</div></div>` : ''}
+          <hr class="divider">
+          <div class="stat-label" style="margin-bottom:8px;">Intercourse Days Logged (${logged.length})</div>
+          ${logged.length
+            ? `<div class="intercourse-log-display">${loggedBadges}</div>`
+            : '<div style="color:var(--text-soft);font-size:13px;">No days logged for this cycle.</div>'}
+        </div>
+      </div>`;
+  });
+  document.getElementById('historyList').innerHTML = html;
+}
+
+function toggleHistory(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+  header.querySelector('div:last-child').textContent = body.classList.contains('open') ? '⌄' : '›';
+}
+
+// ════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+
+// ════════════════════════════════════════════
+//  PROFILE TAB
+// ════════════════════════════════════════════
+function saveProfile() {
+  const d = getData();
+  d.profile = {
+    weight: document.getElementById('profileWeight').value,
+    height: document.getElementById('profileHeight').value,
+    age: document.getElementById('profileAge').value,
+    bloodGroup: document.getElementById('profileBloodGroup').value,
+    conditions: document.getElementById('profileConditions').value.trim()
+  };
+  saveData(d);
+  showToast('✓ Profile saved');
+  liveCalcBMI();
+  renderOverview();
+}
+
+function loadProfile() {
+  const d = getData();
+  if (!d.profile) return;
+  const p = d.profile;
+  if (p.weight) document.getElementById('profileWeight').value = p.weight;
+  if (p.height) document.getElementById('profileHeight').value = p.height;
+  if (p.age) document.getElementById('profileAge').value = p.age;
+  if (p.bloodGroup) document.getElementById('profileBloodGroup').value = p.bloodGroup;
+  if (p.conditions) document.getElementById('profileConditions').value = p.conditions;
+  liveCalcBMI();
+}
+
+function calcBMIInfo(bmi) {
+  // Asian Indian cut-offs
+  let cat, color, advice;
+  if (bmi < 18.5) {
+    cat = 'Underweight'; color = '#60AFFF';
+    advice = '⚠️ Being underweight can affect ovulation and hormone levels. A nutritionist can help you reach a healthy weight to support conception.';
+  } else if (bmi < 23) {
+    cat = 'Normal (Healthy)'; color = '#4CAF8A';
+    advice = '✅ Your BMI is in the ideal range for fertility. Maintaining a healthy weight supports regular ovulation and better IVF outcomes.';
+  } else if (bmi < 27.5) {
+    cat = 'Overweight'; color = '#FF9800';
+    advice = '⚠️ Excess weight can affect hormone balance and ovulation. Even a 5–10% weight reduction can significantly improve fertility and cycle regularity.';
+  } else {
+    cat = 'Obese'; color = '#E55A6A';
+    advice = '⚠️ Obesity is associated with PCOS, insulin resistance, and reduced IVF success rates. Weight management with your doctor is strongly recommended.';
+  }
+  // Bar position: BMI 15=0%, BMI 35=100%
+  const pct = Math.min(100, Math.max(0, ((bmi - 15) / 20) * 100));
+  return { cat, color, advice, pct };
+}
+
+function liveCalcBMI() {
+  const w = parseFloat(document.getElementById('profileWeight').value);
+  const h = parseFloat(document.getElementById('profileHeight').value);
+  if (!w || !h || h < 50) { document.getElementById('bmiDisplay').style.display = 'none'; return; }
+  const bmi = w / ((h/100) ** 2);
+  const info = calcBMIInfo(bmi);
+  document.getElementById('bmiDisplay').style.display = 'block';
+  document.getElementById('bmiValue').textContent = bmi.toFixed(1);
+  document.getElementById('bmiValue').style.color = info.color;
+  const cat = document.getElementById('bmiCategory');
+  cat.textContent = info.cat;
+  cat.style.background = info.color + '22';
+  cat.style.color = info.color;
+  document.getElementById('bmiIndicator').style.left = info.pct + '%';
+  document.getElementById('bmiAdvice').textContent = info.advice;
+
+  // Stats
+  const age = document.getElementById('profileAge').value;
+  const idealMin = Math.round(18.5 * (h/100) ** 2);
+  const idealMax = Math.round(22.9 * (h/100) ** 2);
+  let statsHtml = `
+    <div class="profile-stat"><div class="profile-stat-val">${bmi.toFixed(1)}</div><div class="profile-stat-label">BMI</div></div>
+    <div class="profile-stat"><div class="profile-stat-val">${w} kg</div><div class="profile-stat-label">Weight</div></div>
+    <div class="profile-stat"><div class="profile-stat-val">${h} cm</div><div class="profile-stat-label">Height</div></div>
+    <div class="profile-stat"><div class="profile-stat-val">${idealMin}–${idealMax} kg</div><div class="profile-stat-label">Ideal Weight Range</div></div>`;
+  document.getElementById('profileStatGrid').innerHTML = statsHtml;
+}
+
+function getBMIMini() {
+  const d = getData();
+  if (!d.profile || !d.profile.weight || !d.profile.height) return '';
+  const w = parseFloat(d.profile.weight);
+  const h = parseFloat(d.profile.height);
+  if (!w || !h) return '';
+  const bmi = w / ((h/100) ** 2);
+  const info = calcBMIInfo(bmi);
+  return `<div class="bmi-mini">
+    <div class="bmi-mini-val" style="color:${info.color}">${bmi.toFixed(1)}</div>
+    <div class="bmi-mini-info">
+      <div class="bmi-mini-cat" style="color:${info.color}">BMI · ${info.cat}</div>
+      <div class="bmi-mini-sub">${w} kg · ${h} cm · Ideal: ${Math.round(18.5*(h/100)**2)}–${Math.round(22.9*(h/100)**2)} kg</div>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') enterApp();
+});
+
+init();
+applyLangToWelcome();
+</script>
+</body>
+</html>
