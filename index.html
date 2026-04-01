@@ -1,24 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Care & Cure Fertility Calculator</title>
+    <title>Care Cure Fertility Calculator</title>
 </head>
 <body>
-    <h1>Care & Cure Fertility Calculator</h1>
+    <h1>Welcome to the Care Cure Fertility Calculator</h1>
     <form>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+        <br>
         <label for="cycleLength">Cycle Length (days):</label>
-        <input type="number" id="cycleLength" name="cycleLength" required><br><br>
-
-        <label for="lastPeriod">First Day of Last Period:</label>
-        <input type="date" id="lastPeriod" name="lastPeriod" required><br><br>
-
-        <input type="submit" value="Calculate"> 
+        <input type="number" id="cycleLength" name="cycleLength" required>
+        <br>
+        <label for="lastPeriod">Last Period Date:</label>
+        <input type="date" id="lastPeriod" name="lastPeriod" required>
+        <br>
+        <input type="submit" value="Calculate">
     </form>
-    <div id="results"></div>
+    <div id="result"></div>
     <script>
-        // JavaScript code to calculate fertility based on inputs
+        document.querySelector('form').onsubmit = function(e) {
+            e.preventDefault();
+            const age = document.getElementById('age').value;
+            const cycleLength = document.getElementById('cycleLength').value;
+            const lastPeriod = new Date(document.getElementById('lastPeriod').value);
+            const nextOvulation = new Date(lastPeriod);
+            nextOvulation.setDate(nextOvulation.getDate() + cycleLength - 14);
+            const nextFertileWindowStart = new Date(nextOvulation);
+            const nextFertileWindowEnd = new Date(nextOvulation);
+            nextFertileWindowStart.setDate(nextFertileWindowStart.getDate() - 5);
+            nextFertileWindowEnd.setDate(nextFertileWindowEnd.getDate() + 1);
+            document.getElementById('result').innerHTML = `Your next ovulation date is: ${nextOvulation.toDateString()}<br>The next fertile window is from ${nextFertileWindowStart.toDateString()} to ${nextFertileWindowEnd.toDateString()}.`;
+        };
     </script>
 </body>
 </html>
